@@ -7,7 +7,7 @@
 # If this script is helpful to you, please consider buying me a Ko-Fi at https://ko-fi.com/pustal.
 
 # Usage:
-# - firsly check if you don't already have the root.json file in
+# - firstly check if you don't already have the root.json file in
 # <Fantasian app>/Contents/Game/Data/_data (To explore the contents of the app and reach the save file,
 # simply open Finder and go to you Applications folder, find Fantasian, right click and select 'Show Package Contents'
 # - open the Terminal application;
