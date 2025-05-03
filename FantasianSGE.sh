@@ -22,7 +22,7 @@
 # - in Steam Play (Steam Deck / Linux), you'll have to navigate to a simillar directory inside
 # <SteamLibrary-folder>/steamapps/compatdata/2844850/pfx/
 
-DATABASE_PATH="~/Library/Containers/com.mistwalkercorp.fantasian/Data/Library/Application Support/FANTASIAN/root.json"
+DATABASE_PATH="~/Library/Containers/com.mistwalkercorp.fantasian/Data/Library/Application Support/FANTASIAN/SaveDataEntity.sqlite"
 # If the line above doesn't work, place this script directly wherever the SaveDataEntity.sqlite file is
 # and replace the line above with DATABASE_PATH="./SaveDataEntity.sqlite"
 OUTPUT_FILE_PATH="./root.json"
