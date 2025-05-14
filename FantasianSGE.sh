@@ -3,7 +3,7 @@
 # FantasianSGE - Fantasian save game extractor
 # Version 0.1.2
 # Created by pustal
-# Special thanks to uior and Xsonicdragon on Reddit for providing their data and helping debugging
+# Special thanks to uior, Xsonicdragon and Square_Ad1583 on Reddit for providing their data and helping debugging
 # If this script is helpful to you, please consider buying me a Ko-Fi at https://ko-fi.com/pustal.
 
 # Usage:
