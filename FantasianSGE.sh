@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # FantasianSGE - Fantasian save game extractor
-# Version 0.1.1
+# Version 0.1.2
 # Created by pustal
 # Special thanks to uior and Xsonicdragon on Reddit for providing their data and helping debugging
 # If this script is helpful to you, please consider buying me a Ko-Fi at https://ko-fi.com/pustal.
@@ -22,7 +22,8 @@
 # - in Steam Play (Steam Deck / Linux), you'll have to navigate to a simillar directory inside
 # <SteamLibrary-folder>/steamapps/compatdata/2844850/pfx/
 
-DATABASE_PATH="~/Library/Containers/com.mistwalkercorp.fantasian/Data/Library/Application Support/FANTASIAN/SaveDataEntity.sqlite"
+DATABASE_HOMEPATH="~/Library/Containers/com.mistwalkercorp.fantasian/Data/Library/Application Support/FANTASIAN/SaveDataEntity.sqlite"
+DATABASE_PATH="${DATABASE_HOMEPATH/#\~/$HOME}"
 # If the line above doesn't work, place this script directly wherever the SaveDataEntity.sqlite file is
 # and replace the line above with DATABASE_PATH="./SaveDataEntity.sqlite"
 OUTPUT_FILE_PATH="./root.json"
