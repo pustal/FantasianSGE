@@ -11,6 +11,7 @@
 # <Fantasian app>/Contents/Game/Data/_data (To explore the contents of the app and reach the save file,
 # simply open Finder and go to you Applications folder, find Fantasian, right click and select 'Show Package Contents'
 # - open the Terminal application;
+# - type, without quotes "xcode-select --install" and then press 'enter' to eiher install Apple's Command Line Tools from XCode or read a message confirming you already have it installed; 
 # - navigate to whatever folder you have this script in, example (remove quotes):
 # "cd ~/Downloads/";
 # - type, without quotes, "chmod +x FantasianSGE.sh" to give the script execution permissions;
