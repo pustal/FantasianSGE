@@ -35,7 +35,10 @@ class AboutScreen extends StatelessWidget {
               children: <Widget>[
                 const BrandHeader(),
                 const SizedBox(height: 4),
-                Text('Version ${AppInfo.version}', style: theme.textTheme.bodySmall),
+                Text(
+                  'Version ${AppInfo.version} · Build ${AppInfo.buildStamp}',
+                  style: theme.textTheme.bodySmall,
+                ),
                 const SizedBox(height: 16),
                 Text(
                   'Moves your FANTASIAN progress between the Apple Arcade release '

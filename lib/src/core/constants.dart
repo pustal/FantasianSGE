@@ -9,6 +9,16 @@ abstract final class AppInfo {
 
   /// Version shown on the About screen. Keep in sync with `pubspec.yaml`.
   static const String version = '1.0.0';
+
+  /// When this binary was built, e.g. `2026-10-20 16:13 UTC`.
+  ///
+  /// Injected by the scripts in `tool/` with
+  /// `--dart-define=FSGE_BUILD_STAMP=...`, so two builds of the same version
+  /// can be told apart on the About screen. `development` for `flutter run`.
+  static const String buildStamp = String.fromEnvironment(
+    'FSGE_BUILD_STAMP',
+    defaultValue: 'development',
+  );
 }
 
 /// Links shown on the About screen.

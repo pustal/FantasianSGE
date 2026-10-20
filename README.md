@@ -94,6 +94,24 @@ flutter run -d macos          # or: windows, linux, or an iOS device/simulator
 flutter build macos --release
 ```
 
+### Test builds for macOS and iOS
+
+On a Mac with Xcode, these scripts run `flutter analyze` and `flutter test`,
+build, and put the artifacts in `build/dist/` with a *READ ME FIRST* beside each.
+The build time is compiled in and shown on the About screen, so two builds of the
+same version can be told apart.
+
+```sh
+tool/build_apple.sh                  # macOS app + iOS Simulator app
+tool/build_apple.sh --device         # ...plus an unsigned iOS .ipa
+tool/build_macos_unsigned.sh         # macOS only (ad-hoc signed; a Skia copy for older Intel Macs)
+tool/build_ios_test.sh               # iOS Simulator only
+tool/build_ios_test.sh --device      # unsigned .ipa, to re-sign with Sideloadly/AltStore
+```
+
+Add `--skip-checks` to skip analyze and tests; anything after the options is passed
+to `flutter build`.
+
 - **macOS:** the app sandbox is turned off (see `macos/Runner/*.entitlements`) because
   the app must reach another app's container and check whether the game is running. The
   first time it touches the save folder, macOS may ask to allow access to data from other
