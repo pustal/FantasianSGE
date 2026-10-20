@@ -129,6 +129,7 @@ class InsertController extends TaskController {
       saveFolder: folder,
       incoming: _incoming,
       backupRoot: backupRoot,
+      gameRunCheck: _transfer.gameRunCheck,
     );
     _onDisk = await procedure.prepare();
     _guided = procedure;

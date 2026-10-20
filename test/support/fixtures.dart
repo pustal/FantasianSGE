@@ -11,6 +11,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:fantasian_sge/src/core/arcade_payload.dart';
+import 'package:fantasian_sge/src/core/game_process.dart';
 import 'package:fantasian_sge/src/core/save_models.dart';
 import 'package:path/path.dart' as p;
 import 'package:sqlite3/sqlite3.dart';
@@ -109,3 +110,18 @@ Map<String, List<int>> snapshotFiles(Directory folder) => <String, List<int>>{
   for (final FileSystemEntity entity in folder.listSync()..sort((FileSystemEntity a, FileSystemEntity b) => a.path.compareTo(b.path)))
     if (entity is File) p.basename(entity.path): entity.readAsBytesSync(),
 };
+
+/// A stand-in for the FANTASIAN process, so tests decide whether "the game"
+/// is running instead of depending on what runs on the test machine (a real
+/// `pgrep` on a Mac answers "not running", on Linux "unknown").
+class FakeGame {
+  /// Creates a fake game that starts closed.
+  FakeGame({this.running = false});
+
+  /// Whether the fake game is open.
+  bool running;
+
+  /// A [GameRunCheck] reporting [running].
+  Future<GameRunState> check() async =>
+      running ? GameRunState.running : GameRunState.notRunning;
+}

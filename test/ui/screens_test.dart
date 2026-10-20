@@ -31,26 +31,48 @@ import 'package:path/path.dart' as p;
 import '../support/fixtures.dart';
 
 /// Loads the bundled fonts so screenshots show real text, not test boxes.
+///
+/// Fonts only affect how screenshots look, never what the tests check, so a
+/// font that cannot be found is skipped rather than failing every test.
 Future<void> loadFonts() async {
-  for (final (String family, List<String> files) in <(String, List<String>)>[
-    ('Cinzel', <String>['assets/fonts/Cinzel.ttf']),
-    ('Nunito', <String>['assets/fonts/Nunito.ttf']),
-    ('MaterialIcons', <String>[_materialIconsPath()]),
+  for (final (String family, String? file) in <(String, String?)>[
+    ('Cinzel', 'assets/fonts/Cinzel.ttf'),
+    ('Nunito', 'assets/fonts/Nunito.ttf'),
+    ('MaterialIcons', _materialIconsPath()),
   ]) {
-    final FontLoader loader = FontLoader(family);
-    for (final String file in files) {
-      final Uint8List bytes = File(file).readAsBytesSync();
-      loader.addFont(Future<ByteData>.value(ByteData.sublistView(bytes)));
+    if (file == null || !File(file).existsSync()) {
+      continue;
     }
+    final Uint8List bytes = File(file).readAsBytesSync();
+    final FontLoader loader = FontLoader(family)
+      ..addFont(Future<ByteData>.value(ByteData.sublistView(bytes)));
     await loader.load();
   }
 }
 
-/// The Material icon font shipped with the Flutter SDK.
-String _materialIconsPath() {
-  final String flutterRoot = Platform.environment['FLUTTER_ROOT'] ??
-      p.dirname(p.dirname(p.dirname(Platform.resolvedExecutable)));
-  return p.join(flutterRoot, 'bin', 'cache', 'artifacts', 'material_fonts', 'MaterialIcons-Regular.otf');
+/// The Material icon font shipped with the Flutter SDK, or `null` if it
+/// cannot be found.
+///
+/// Uses FLUTTER_ROOT when the flutter tool sets it; otherwise walks up from
+/// the test runner (`<sdk>/bin/cache/artifacts/engine/<platform>/flutter_tester`)
+/// until the SDK's `bin/cache` folder turns up.
+String? _materialIconsPath() {
+  const List<String> relative = <String>[
+    'bin', 'cache', 'artifacts', 'material_fonts', 'MaterialIcons-Regular.otf',
+  ];
+  final String? root = Platform.environment['FLUTTER_ROOT'];
+  if (root != null) {
+    return p.joinAll(<String>[root, ...relative]);
+  }
+  String dir = p.dirname(Platform.resolvedExecutable);
+  while (p.dirname(dir) != dir) {
+    final String candidate = p.joinAll(<String>[dir, ...relative]);
+    if (File(candidate).existsSync()) {
+      return candidate;
+    }
+    dir = p.dirname(dir);
+  }
+  return null;
 }
 
 /// Wraps [child] the way the app shell does.
@@ -92,7 +114,13 @@ void main() {
     tester.view.physicalSize = const Size(1280, 900);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
-    await tester.pumpWidget(const FantasianSgeApp());
+    await tester.pumpWidget(
+      FantasianSgeApp(
+        // Never look at the real machine's saves from a test.
+        locations: SaveLocations(platform: 'linux', environment: <String, String>{'HOME': home.path}),
+        transfer: SaveTransfer(gameRunCheck: FakeGame().check),
+      ),
+    );
     await tester.pumpAndSettle();
     expect(find.text('Apple Arcade to Steam'), findsOneWidget);
     await tester.tap(find.text('About'));
@@ -107,7 +135,13 @@ void main() {
     tester.platformDispatcher.platformBrightnessTestValue = Brightness.dark;
     addTearDown(tester.view.reset);
     addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
-    await tester.pumpWidget(const FantasianSgeApp());
+    await tester.pumpWidget(
+      FantasianSgeApp(
+        // Never look at the real machine's saves from a test.
+        locations: SaveLocations(platform: 'linux', environment: <String, String>{'HOME': home.path}),
+        transfer: SaveTransfer(gameRunCheck: FakeGame().check),
+      ),
+    );
     await tester.tap(find.text('About'));
     await tester.pumpAndSettle();
     expect(find.byType(NavigationBar), findsOneWidget);
@@ -150,7 +184,13 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
 
-    final InsertController controller = InsertController(locations: macLocations());
+    // The game is closed while the procedure prepares, then opened for the
+    // swaps, exactly as a player would do it.
+    final FakeGame game = FakeGame();
+    final InsertController controller = InsertController(
+      locations: macLocations(),
+      transfer: SaveTransfer(gameRunCheck: game.check),
+    );
     await tester.runAsync(() async {
       await writeArcadeDatabase(macSaveFolder());
       // A Steam save holding two slots, one of which replaces a Mac slot.
@@ -172,7 +212,9 @@ void main() {
     expect(find.text('Game is on the main menu'), findsOneWidget);
     await screenshot('insert_guided_light.png');
 
+    game.running = true; // the player starts FANTASIAN
     await tester.runAsync(controller.advanceGuided); // swap in
+    expect(controller.error, isNull);
     await tester.runAsync(controller.advanceGuided); // swap back
     await tester.runAsync(controller.advanceGuided); // finish
     await tester.pumpAndSettle();

@@ -10,6 +10,8 @@ library;
 import 'package:flutter/material.dart';
 
 import 'src/core/constants.dart';
+import 'src/core/save_locations.dart';
+import 'src/core/save_transfer.dart';
 import 'src/ui/home_shell.dart';
 import 'src/ui/theme/fantasian_theme.dart';
 
@@ -19,8 +21,14 @@ void main() {
 
 /// The root widget.
 class FantasianSgeApp extends StatelessWidget {
-  /// Creates the app.
-  const FantasianSgeApp({super.key});
+  /// Creates the app. The optional services replace the real ones in tests.
+  const FantasianSgeApp({this.locations, this.transfer, super.key});
+
+  /// Where to look for saves; the real machine when `null`.
+  final SaveLocations? locations;
+
+  /// The transfer service; the real one when `null`.
+  final SaveTransfer? transfer;
 
   @override
   Widget build(BuildContext context) => MaterialApp(
@@ -28,6 +36,6 @@ class FantasianSgeApp extends StatelessWidget {
     debugShowCheckedModeBanner: false,
     theme: FantasianTheme.light(),
     darkTheme: FantasianTheme.dark(),
-    home: const HomeShell(),
+    home: HomeShell(locations: locations, transfer: transfer),
   );
 }

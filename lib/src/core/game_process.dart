@@ -17,6 +17,13 @@ enum GameRunState {
   unknown,
 }
 
+/// Asks whether FANTASIAN is running.
+///
+/// The insert workflows take one of these instead of calling [GameProcess]
+/// directly, so tests can say exactly what the "game" is doing rather than
+/// depending on what happens to be running on the machine.
+typedef GameRunCheck = Future<GameRunState> Function();
+
 /// Process checks used by the insert workflows.
 abstract final class GameProcess {
   /// Looks for the game's process with `pgrep`, matching the app bundle path

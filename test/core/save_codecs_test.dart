@@ -205,7 +205,7 @@ void main() {
         path: 'Data/GameData3.json',
         plaintext: makeSlot(playSeconds: 33, money: 33, mapId: 'Steam', date: 's'),
       );
-      final DirectWriteResult result = await SaveTransfer().writeIntoArcadeFolder(
+      final DirectWriteResult result = await SaveTransfer(gameRunCheck: FakeGame().check).writeIntoArcadeFolder(
         saveFolder: folder.path,
         incoming: <SaveRecord>[incoming],
         backupRoot: p.join(temp.path, 'backups'),
@@ -227,6 +227,97 @@ void main() {
       await File(zipPath).writeAsBytes(zip);
       final LoadedSave save = await SaveLoader().loadFiles(<String>[zipPath]);
       expect(save.records, hasLength(4));
+    });
+  });
+
+  group('Game process checks', () {
+    late Directory folder;
+    late FakeGame game;
+
+    setUp(() async {
+      folder = Directory(p.join(temp.path, 'FANTASIAN'));
+      await writeArcadeDatabase(folder);
+      game = FakeGame();
+    });
+
+    GuidedMacInsertion guided() => GuidedMacInsertion(
+      saveFolder: folder.path,
+      incoming: <SaveRecord>[arcadeSlots.first],
+      backupRoot: p.join(temp.path, 'backups'),
+      gameRunCheck: game.check,
+    );
+
+    test('extracting never asks about the game', () async {
+      // Reading is done on a copy, so it works the same with the game open.
+      game.running = true;
+      final LoadedSave save = await SaveLoader().loadFolder(folder.path);
+      expect(save.records, hasLength(4));
+    });
+
+    test('a direct write refuses while the game is open', () async {
+      game.running = true;
+      final Map<String, List<int>> before = snapshotFiles(folder);
+      await expectLater(
+        SaveTransfer(gameRunCheck: game.check).writeIntoArcadeFolder(
+          saveFolder: folder.path,
+          incoming: <SaveRecord>[arcadeSlots.first],
+          backupRoot: p.join(temp.path, 'backups'),
+        ),
+        throwsA(isA<SaveException>()),
+      );
+      expect(snapshotFiles(folder), before);
+    });
+
+    test('the guided insert starts only with the game closed', () async {
+      game.running = true;
+      await expectLater(guided().prepare(), throwsA(isA<SaveException>()));
+    });
+
+    test('swapping in waits for the game, and says nothing has changed', () async {
+      final GuidedMacInsertion procedure = guided();
+      await procedure.prepare();
+      final Map<String, List<int>> before = snapshotFiles(folder);
+
+      await expectLater(
+        procedure.swapIn(),
+        throwsA(
+          isA<SaveException>().having(
+            (SaveException e) => e.hint,
+            'hint',
+            contains('Nothing has been changed yet'),
+          ),
+        ),
+      );
+      expect(snapshotFiles(folder), before);
+      expect(procedure.step, GuidedStep.prepared);
+
+      // Once the game is open the same step goes through.
+      game.running = true;
+      await procedure.swapIn();
+      expect(procedure.step, GuidedStep.swappedIn);
+      await procedure.cancel();
+    });
+
+    test('a game closed after loading is reported, and Stop restores the files', () async {
+      final Map<String, List<int>> original = snapshotFiles(folder);
+      final GuidedMacInsertion procedure = guided();
+      await procedure.prepare();
+      game.running = true;
+      await procedure.swapIn();
+
+      game.running = false;
+      await expectLater(
+        procedure.swapBack(),
+        throwsA(
+          isA<SaveException>().having(
+            (SaveException e) => e.hint,
+            'hint',
+            contains('Stop and put my files back'),
+          ),
+        ),
+      );
+      await procedure.cancel();
+      expect(snapshotFiles(folder), original);
     });
   });
 }

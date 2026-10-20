@@ -30,13 +30,19 @@ final class DirectWriteResult {
 
 /// Conversions and installs between the two releases.
 final class SaveTransfer {
-  /// Creates the service.
-  SaveTransfer({SteamRootCodec? steamCodec, SaveLoader? loader})
+  /// Creates the service. [gameRunCheck] defaults to looking for the real
+  /// game process.
+  SaveTransfer({SteamRootCodec? steamCodec, SaveLoader? loader, GameRunCheck? gameRunCheck})
     : _steam = steamCodec ?? SteamRootCodec(),
-      _loader = loader ?? SaveLoader();
+      _loader = loader ?? SaveLoader(),
+      gameRunCheck = gameRunCheck ?? GameProcess.check;
 
   final SteamRootCodec _steam;
   final SaveLoader _loader;
+
+  /// How this service tells whether FANTASIAN is running. Also handed to the
+  /// guided procedures it creates.
+  final GameRunCheck gameRunCheck;
 
   // ---------------------------------------------------------------------------
   // Apple Arcade -> Neo Dimension
@@ -100,8 +106,11 @@ final class SaveTransfer {
     if (database == null) {
       throw _needsOwnSave(saveFolder);
     }
-    if (await GameProcess.check() == GameRunState.running) {
-      throw const SaveException('Quit FANTASIAN first, then try again.');
+    if (await gameRunCheck() == GameRunState.running) {
+      throw const SaveException(
+        'Quit FANTASIAN first, then try again.',
+        hint: 'A direct write changes the save files, so the game must not have them open.',
+      );
     }
     final LoadedSave current = await ArcadeDatabase.load(database);
     final String backup = await FileOperations.backupFolder(saveFolder, backupRoot: backupRoot);
@@ -197,12 +206,14 @@ enum GuidedStep {
 /// 6. Player saves in game; that save is recorded properly and synced.
 final class GuidedMacInsertion {
   /// Creates a procedure that inserts [incoming] into [saveFolder], keeping
-  /// backups under [backupRoot].
+  /// backups under [backupRoot]. [gameRunCheck] defaults to looking for the
+  /// real game process.
   GuidedMacInsertion({
     required this.saveFolder,
     required this.incoming,
     required this.backupRoot,
-  });
+    GameRunCheck? gameRunCheck,
+  }) : _gameRunCheck = gameRunCheck ?? GameProcess.check;
 
   /// The game's save folder on this Mac.
   final String saveFolder;
@@ -213,6 +224,7 @@ final class GuidedMacInsertion {
   /// Folder that receives the timestamped backup.
   final String backupRoot;
 
+  final GameRunCheck _gameRunCheck;
   GuidedStep _step = GuidedStep.ready;
   String? _backupPath;
   Directory? _workDir;
@@ -233,8 +245,12 @@ final class GuidedMacInsertion {
     if (database == null) {
       throw SaveTransfer._needsOwnSave(saveFolder);
     }
-    if (await GameProcess.check() == GameRunState.running) {
-      throw const SaveException('Quit FANTASIAN before starting, then try again.');
+    if (await _gameRunCheck() == GameRunState.running) {
+      throw const SaveException(
+        'Quit FANTASIAN before starting, then try again.',
+        hint: 'The backup is taken first, and it is only consistent while the game '
+            'has its save files closed.',
+      );
     }
     _backupPath = await FileOperations.backupFolder(saveFolder, backupRoot: backupRoot);
     _workDir = await Directory.systemTemp.createTemp('fantasian_guided_');
@@ -254,7 +270,14 @@ final class GuidedMacInsertion {
   /// Step 3. The game must be running (on its main menu).
   Future<LoadedSave> swapIn() async {
     _expect(GuidedStep.prepared);
-    await _requireRunning('before the swap');
+    if (await _gameRunCheck() == GameRunState.notRunning) {
+      throw const SaveException(
+        'FANTASIAN is not running.',
+        hint: 'This step needs the game open on its main menu, so it can load your '
+            'Steam slot. Nothing has been changed yet. Start the game, then press '
+            '"Game is on the main menu" again.',
+      );
+    }
     await FileOperations.replaceSaveFiles(
       sourceFolder: _stagedCopy,
       destinationFolder: saveFolder,
@@ -266,7 +289,14 @@ final class GuidedMacInsertion {
   /// Step 5. The player has loaded the slot; put this Mac's own files back.
   Future<LoadedSave> swapBack() async {
     _expect(GuidedStep.swappedIn);
-    await _requireRunning('after loading');
+    if (await _gameRunCheck() == GameRunState.notRunning) {
+      throw const SaveException(
+        'FANTASIAN was closed before the slot was saved.',
+        hint: 'The Steam slot was loaded into the game but not saved yet, so that '
+            'progress is gone with it. Press "Stop and put my files back" to restore '
+            "this Mac's own save files, then start over.",
+      );
+    }
     await FileOperations.replaceSaveFiles(sourceFolder: _ownCopy, destinationFolder: saveFolder);
     _step = GuidedStep.swappedBack;
     return _readSaveFolder();
@@ -293,16 +323,6 @@ final class GuidedMacInsertion {
 
   Future<LoadedSave> _readSaveFolder() =>
       ArcadeDatabase.load(p.join(saveFolder, ArcadeConstants.databaseFileName));
-
-  Future<void> _requireRunning(String when) async {
-    if (await GameProcess.check() == GameRunState.notRunning) {
-      throw SaveException(
-        'FANTASIAN is not running ($when).',
-        hint: 'The loaded progress only lives inside the running game. Start it '
-            'and stay on the main menu, then press the button again.',
-      );
-    }
-  }
 
   void _expect(GuidedStep expected) {
     if (_step != expected) {
