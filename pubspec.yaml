@@ -1,0 +1,47 @@
+name: fantasian_sge
+description: "FantasianSGE: move FANTASIAN saves between Apple Arcade and Neo Dimension on Steam."
+publish_to: 'none'
+
+# Keep in sync with AppInfo.version in lib/src/core/constants.dart.
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.13.5
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # Zip reading/writing for save folders carried between machines.
+  archive: ^4.5.2
+  # Native open/save dialogs on every platform (Files app on iOS).
+  file_picker: ^13.1.0
+  path: ^1.9.1
+  # AES-128-CBC for Neo Dimension save records.
+  pointycastle: ^4.0.0
+  # Reads/writes the Apple Arcade Core Data store; bundles SQLite natively.
+  sqlite3: ^3.7.1
+  # Opens the GitHub and Ko-fi links.
+  url_launcher: ^6.3.3
+
+dev_dependencies:
+  flutter_lints: ^6.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/brand/logo.png
+
+  # Bundled so the app looks the same offline on every platform.
+  # Both are variable fonts under the SIL Open Font License (see assets/fonts).
+  fonts:
+    - family: Cinzel
+      fonts:
+        - asset: assets/fonts/Cinzel.ttf
+    - family: Nunito
+      fonts:
+        - asset: assets/fonts/Nunito.ttf
+        - asset: assets/fonts/Nunito-Italic.ttf
+          style: italic

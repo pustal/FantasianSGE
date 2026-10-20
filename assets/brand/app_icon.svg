@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <radialGradient id="sky" cx="0.5" cy="0.35" r="0.85">
+      <stop offset="0" stop-color="#3B4F8C"/>
+      <stop offset="0.55" stop-color="#1A2654"/>
+      <stop offset="1" stop-color="#0A0F26"/>
+    </radialGradient>
+  </defs>
+  <rect width="1024" height="1024" fill="url(#sky)"/>
+<g transform="translate(61.4 61.4) scale(0.88)">
+  <defs>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FBE3A0"/>
+      <stop offset="0.45" stop-color="#E0B456"/>
+      <stop offset="1" stop-color="#9C6B22"/>
+    </linearGradient>
+    <radialGradient id="well" cx="0.5" cy="0.45" r="0.6">
+      <stop offset="0" stop-color="#22366B"/>
+      <stop offset="1" stop-color="#0B1230"/>
+    </radialGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#9BEBFF" stop-opacity="0.75"/>
+      <stop offset="1" stop-color="#9BEBFF" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <path d="M 471.8 142.2 L 479.0 101.3 L 545.0 101.3 L 552.2 142.2 L 600.7 150.7 L 621.4 114.8 L 683.5 137.4 L 676.3 178.2 L 718.9 202.8 L 750.7 176.2 L 801.3 218.6 L 780.5 254.6 L 812.2 292.2 L 851.1 278.0 L 884.2 335.3 L 852.4 361.9 L 869.2 408.2 L 910.7 408.1 L 922.2 473.2 L 883.2 487.4 L 883.2 536.6 L 922.2 550.8 L 910.7 615.9 L 869.2 615.8 L 852.4 662.1 L 884.2 688.7 L 851.1 746.0 L 812.2 731.8 L 780.5 769.4 L 801.3 805.4 L 750.7 847.8 L 718.9 821.2 L 676.3 845.8 L 683.5 886.6 L 621.4 909.2 L 600.7 873.3 L 552.2 881.8 L 545.0 922.7 L 479.0 922.7 L 471.8 881.8 L 423.3 873.3 L 402.6 909.2 L 340.5 886.6 L 347.7 845.8 L 305.1 821.2 L 273.3 847.8 L 222.7 805.4 L 243.5 769.4 L 211.8 731.8 L 172.9 746.0 L 139.8 688.7 L 171.6 662.1 L 154.8 615.8 L 113.3 615.9 L 101.8 550.8 L 140.8 536.6 L 140.8 487.4 L 101.8 473.2 L 113.3 408.1 L 154.8 408.2 L 171.6 361.9 L 139.8 335.3 L 172.9 278.0 L 211.8 292.2 L 243.5 254.6 L 222.7 218.6 L 273.3 176.2 L 305.1 202.8 L 347.7 178.2 L 340.5 137.4 L 402.6 114.8 L 423.3 150.7 Z M 194.0 512.0 a 318.0 318.0 0 1 0 636.0 0 a 318.0 318.0 0 1 0 -636.0 0 Z" fill="url(#gold)" fill-rule="evenodd"
+        stroke="#6E4A14" stroke-width="6" stroke-linejoin="round"/>
+  <circle cx="512.0" cy="512.0" r="318" fill="url(#well)"/>
+  <circle cx="512.0" cy="512.0" r="318" fill="none" stroke="#6E4A14" stroke-width="6"/>
+  <circle cx="512.0" cy="512.0" r="300" fill="none" stroke="#E0B456" stroke-width="3" opacity="0.55"/>
+  <path d="M 372 351 L 377.6 366.4 L 393 372 L 377.6 377.6 L 372 393 L 366.4 377.6 L 351 372 L 366.4 366.4 Z" fill="#FFF3C8" opacity="0.9"/>
+<path d="M 660 337 L 664.0 348.0 L 675 352 L 664.0 356.0 L 660 367 L 656.0 356.0 L 645 352 L 656.0 348.0 Z" fill="#FFF3C8" opacity="0.9"/>
+<path d="M 664 629 L 669.6 644.4 L 685 650 L 669.6 655.6 L 664 671 L 658.4 655.6 L 643 650 L 658.4 644.4 Z" fill="#FFF3C8" opacity="0.9"/>
+<path d="M 360 656 L 363.2 664.8 L 372 668 L 363.2 671.2 L 360 680 L 356.8 671.2 L 348 668 L 356.8 664.8 Z" fill="#FFF3C8" opacity="0.9"/>
+  <circle cx="512.0" cy="516.0" r="210" fill="url(#glow)"/>
+  <g stroke="#2A1A05" stroke-width="5" stroke-linejoin="round">
+    <polygon points="512,268 416,420 512,458" fill="#D9FAFF"/>
+    <polygon points="512,268 608,420 512,458" fill="#8FDDF5"/>
+    <polygon points="416,420 416,612 512,574 512,458" fill="#6CCBEC"/>
+    <polygon points="608,420 608,612 512,574 512,458" fill="#3A93CF"/>
+    <polygon points="416,612 512,760 512,574" fill="#3F9FD6"/>
+    <polygon points="608,612 512,760 512,574" fill="#1F5C9A"/>
+  </g>
+  <path d="M 454.0 446 L 482.0 360" stroke="#FFFFFF" stroke-width="12"
+        stroke-linecap="round" opacity="0.85"/>
+  <g fill="none" stroke="url(#gold)" stroke-width="30" stroke-linecap="round">
+    <path d="M 265.8 422.4 A 262 262 0 0 1 706.7 336.7"/>
+    <path d="M 758.2 601.6 A 262 262 0 0 1 317.3 687.3"/>
+  </g>
+  <path d="M 669.9 369.8 L 746.5 380.8 L 743.5 303.6 Z" fill="url(#gold)" stroke="#6E4A14" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M 354.1 654.2 L 277.5 643.2 L 280.5 720.4 Z" fill="url(#gold)" stroke="#6E4A14" stroke-width="4" stroke-linejoin="round"/>
+</g></svg>

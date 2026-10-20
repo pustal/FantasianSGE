@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!--
+	  The sandbox is off on purpose. FantasianSGE has to read and write
+	  FANTASIAN's save folder inside another app's container
+	  (~/Library/Containers/com.mistwalkercorp.fantasian) and check whether the
+	  game is running (pgrep), neither of which a sandboxed app may do. This
+	  also means the app cannot be distributed through the Mac App Store; ship
+	  it as a notarised download instead.
+	-->
+	<key>com.apple.security.app-sandbox</key>
+	<false/>
+	<key>com.apple.security.cs.allow-jit</key>
+	<true/>
+	<key>com.apple.security.network.server</key>
+	<true/>
+</dict>
+</plist>
